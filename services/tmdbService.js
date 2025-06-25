@@ -60,11 +60,13 @@ const saveMovieToDB = async (tmdbMovieId) => {
             adult: tmdbMovieData.adult,
             backdrop_path: tmdbMovieData.backdrop_path,
             genre_ids: tmdbMovieData.genres ? tmdbMovieData.genres.map(genre => genre.id) : [],
+            genre_names: tmdbMovieData.genres ? tmdbMovieData.genres.map(genre => genre.name) : [],
             tmdbId: tmdbMovieData.id,
             overview: tmdbMovieData.overview,
             popularity: tmdbMovieData.popularity,
             poster_path: tmdbMovieData.poster_path,
             release_date: tmdbMovieData.release_date,
+            runtime: tmdbMovieData.runtime,
             title: tmdbMovieData.title,
             video: tmdbMovieData.video,
             watch_providers: allWatchProviders,
@@ -73,6 +75,11 @@ const saveMovieToDB = async (tmdbMovieId) => {
 
         //Create or update movie
         if (movie) {
+
+            movieData.averageRating = movie.averageRating;
+            movieData.numberOfReviews = movie.numberOfReviews;
+            movieData.isFeatured = movie.isFeatured;
+
             Object.assign(movie, movieData);
             await movie.save();
             console.log(`Update exsitng movie: ${movie.title}`);

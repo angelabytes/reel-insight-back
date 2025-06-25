@@ -4,17 +4,55 @@ const { BadRequestError, NotFoundError } = require('../errors');
 const { saveMovieToDB } = require('../services/tmdbService');
 
 const getAllMovies = async (req, res) => {
-    const movies = await Movie.find({});
+    const { sort, limit, isFeatured } = req.query;
+    let queryObject = {};
+    let sortOptions = {};
+
+    // Handle isFeatured filter
+    if (isFeatured === 'true') {
+        queryObject.isFeatured = true;
+    }
+
+    // Build sort options
+    if (sort) {
+        if (sort === 'title') {
+            sortOptions.title = 1; // Ascending by title
+        } else if (sort === '-popularity') {
+            sortOptions.popularity = -1; // Descending by popularity
+        } else if (sort === '-numberOfReviews') {
+            sortOptions.numberOfReviews = -1; // Descending by number of reviews
+        }
+        // Add more sort options as needed
+    } else {
+        // Default sort if none specified, e.g., by creation date or popularity
+        sortOptions.createdAt = -1;
+    }
+
+    let result = Movie.find(queryObject)
+        // SELECT ONLY THE FIELDS NEEDED FOR MOVIE CARDS
+        .select('title poster_path tmdbId averageRating numberOfReviews genre_names release_date run_time overview') // Added overview for description
+        .sort(sortOptions);
+
+    // Handle limit
+    if (limit) {
+        const parsedLimit = parseInt(limit, 10);
+        if (!isNaN(parsedLimit) && parsedLimit > 0) {
+            result = result.limit(parsedLimit);
+        }
+    }
+
+    const movies = await result;
     res.status(StatusCodes.OK).json({ movies, count: movies.length });
 }
 
 const getMovie = async (req, res) => {
-    const { id: movieId } = req.params;
+    const { id: tmdbId } = req.params; // Expecting tmdbId from the URL
 
-    const movie = await Movie.findById(movieId);
+    // Try to find the movie by tmdbId
+    const movie = await Movie.findOne({ tmdbId: parseInt(tmdbId, 10) }); // findOne returns all fields by default
 
     if (!movie) {
-        throw new NotFoundError(`No movie was found with the id ${movieId}`);
+        throw new NotFoundError(`No movie was found with the TMDb ID ${tmdbId}`);
     }
     res.status(StatusCodes.OK).json({ movie });
 }
@@ -62,8 +100,16 @@ const updateMovie = async (req, res) => {
         updates.numberOfReviews = body.numberOfReviews;
     }
 
+    // Allow updating isFeatured flag
+    if (body.isFeatured !== undefined) {
+        if (typeof body.isFeatured !== 'boolean') {
+            throw new BadRequestError("isFeatured must be a boolean value.");
+        }
+        updates.isFeatured = body.isFeatured;
+    }
+
     if (Object.keys(updates).length === 0) {
-        throw new BadRequestError("Only average rating and number of reviews can be updated");
+        throw new BadRequestError("No valid fields provided for update. Only averageRating, numberOfReviews, and isFeatured can be updated.");
     }
 
     const movie = await Movie.findByIdAndUpdate(
@@ -89,7 +135,6 @@ const deleteMovie = async (req, res) => {
     }
     res.status(StatusCodes.OK).send();
 }
-
 
 module.exports = {
     getAllMovies,
