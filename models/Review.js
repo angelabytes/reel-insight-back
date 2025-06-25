@@ -6,23 +6,21 @@ const ReviewSchema = new mongoose.Schema({
         maxlength: 10000,
         required: [true, 'Please enter your review'],
     },
-    movie: {type: mongoose.Types.ObjectId,
+    movie: {
+        type: mongoose.Types.ObjectId,
         ref: "Movie",
-        required: [true, "Rating has to related to a movie"],
+        required: true,
     },
     rating: {
-    type: Number,
-    required: true,
-    validate: {
-        validator: function (inputRating) {
-            if(inputRating === null || inputRating === undefined) {
-                return 'You must input a value for the rating';
-            }
-            const lowestRating = 1;
-            const decimalRating = (inputRating * 2) /2;
-            return decimalRating >= lowestRating;
-        },
-        message: "The rating has to be between 0 and 5",
+        type: Number,
+        required: true,
+        min: 0,
+        max: 5,
+        validate: {
+            validator: function (rating) {
+                return rating !== null && rating % 0.5 === 0;
+            },
+            message: "The rating has to be between 0 and 5, with increments of 0.5",
         }
     },
     createdBy: {

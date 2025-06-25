@@ -1,12 +1,30 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const WatchProviderSchema = require("./WatchProvider");
 
 const MovieSchema = new mongoose.Schema({
-    movieId: { type: Number, required: true, unique: true },
-    title: { type: String, required: true },
+    adult: { type: Boolean, default: false },
+    backdrop_path: String,
+    genre_ids: [Number],
+    tmdbId: { type: Number, required: true, unique: true },
     overview: String,
-    release_date: Date,
+    popularity: Number,
     poster_path: String,
-    watch_providers: []
-}, { timestamps: true }
-)
-module.exports = mongoose.model('Movie', MovieSchema);
+    release_date: Date,
+    title: { type: String, required: true },
+    video: { type: Boolean },
+    watch_providers: [WatchProviderSchema],
+    averageRating: {
+        type: Number,
+        default: 0,
+    },
+    numberOfReviews: {
+        type: Number,
+        default: 0,
+    },
+    lastFetched: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
+module.exports = mongoose.model("Movie", MovieSchema);
