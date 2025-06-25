@@ -19,7 +19,6 @@ const passportInit = require("./passport/passportInit");
 const storeLocals = require("./middleware/storeLocals");
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
-const authMiddleWare = require("./middleware/auth");
 
 //Routes Import
 const movieRouter = require("./routes/movies");
@@ -100,7 +99,7 @@ app.get("/api/v1/csrf-token", (req, res) => {
 
 app.use("/api/v1/sessions", sessionRouter);
 app.use("/api/v1/movies", movieRouter);
-app.use("/api/v1/reviews", authMiddleWare, reviewRouter);
+app.use("/api/v1/reviews", reviewRouter);
 
 
 app.use(notFoundMiddleware);
