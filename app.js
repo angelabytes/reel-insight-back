@@ -99,14 +99,14 @@ app.get("/api/v1/csrf-token", (req, res) => {
 
 
 app.use("/api/v1/sessions", sessionRouter);
-app.use("/api/v1/movies", authMiddleWare, movieRouter);
+app.use("/api/v1/movies", movieRouter);
 app.use("/api/v1/reviews", authMiddleWare, reviewRouter);
 
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5001;
 
 const start = async () => {
     try {

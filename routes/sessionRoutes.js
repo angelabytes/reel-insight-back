@@ -4,7 +4,7 @@ const router = express.Router();
 const { StatusCodes } = require("http-status-codes");
 const { UnauthenticatedError } = require("../errors");
 
-const { registerDo, logOut } = require("../controllers/sessionController");
+const { registerDo, logOut, checkAuthStatus } = require("../controllers/sessionController");
 
 router.route("/login").post((req, res, next) => {
     passport.authenticate("local", (error, user, info) => {
@@ -36,5 +36,6 @@ router.route("/login").post((req, res, next) => {
 
 router.route("/register").post(registerDo);
 router.route("/logout").post(logOut);
+router.route("/check-auth").get(checkAuthStatus);
 
 module.exports = router;
