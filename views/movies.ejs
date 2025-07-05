@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous" />
+    <title>Move Reviews</title>
+</head>
+
+<body>
+    <%- include("partials/head.ejs") %> <%- include("partials/header.ejs") %>
+            <table class="table">
+                <input type="hidden" name="_csrf" value="<%= _csrf %>">
+                <% if (errors) { %>
+                    <div class="alert-error">
+                        <%= errors %>
+                    </div>
+                    <%} %>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Director</th>
+                                <th>Year</th>
+                                <th>Plot</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <% movies.forEach(movie=> { %>
+                                <tr>
+                                    <td>
+                                        <%= movie.title %>
+                                    </td>
+                                    <td>
+                                        <%= movie.director %>
+                                    </td>
+                                    <td>
+                                        <%= movie.year %>
+                                    </td>
+                                    <td>
+                                        <%= movie.plot %>
+                                    </td>
+                                    <td>
+                                        <span class="ms-1"></span>
+                                        <a href="/movies/edit/<%= movie.id %>" class="btn btn-sm btn-primary">Edit</a>
+                                        <form action="/movies/delete/<%= movie.id %>" method="POST"
+                                            style="display: inline;">
+                                            <input type="hidden" name="_method" value="Delete">
+                                            <input type="hidden" name="_csrf" value="<%= _csrf %>">
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Are you sure you want to delete this movie?');">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+            </table>
+            <span class="ms-1"></span><a href="/movies/new" class="btn btn-primary">Add movie</a>
+
+            <%- include("partials/footer.ejs") %>
+</body>
+
+</html>

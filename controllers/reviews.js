@@ -31,6 +31,25 @@ const getAllReviews = async (req, res) => {
     res.status(StatusCodes.OK).json({ reviews, count: reviews.length });
 };
 
+
+const getOneReview = async (req, res) => {
+    const { id: reviewId } = req.params;
+
+    const review = await Review.findOne({ _id: reviewId })
+        .populate({
+            path: 'createdBy',
+            select: 'name',
+        })
+        .populate({
+            path: 'movie',
+            select: 'title tmdbId poster_path',
+        })
+    if (!review) {
+        throw new NotFoundError(`No review found with ID: ${reviewId}`);
+    }
+    res.status(StatusCodes.OK).json({ review })
+}
+
 const userReviews = async (req, res) => {
     const userId = req.user.userId;
 
@@ -38,7 +57,7 @@ const userReviews = async (req, res) => {
         throw new UnauthenticatedError('User not authenticated.');
     }
 
-    const reviews = await Review.find({ user: userId })
+    const reviews = await Review.find({ createdBy: userId })
         .populate({
             path: 'movie',
             select: 'title tmdbId poster_path',
@@ -194,6 +213,7 @@ const deleteReview = async (req, res) => {
 
 module.exports = {
     getAllReviews,
+    getOneReview,
     userReviews,
     createReview,
     updateReview,

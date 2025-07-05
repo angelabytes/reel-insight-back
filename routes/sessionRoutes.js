@@ -3,8 +3,15 @@ const passport = require("passport");
 const router = express.Router();
 const { StatusCodes } = require("http-status-codes");
 const { UnauthenticatedError } = require("../errors");
+const csrf = require("host-csrf");
 
-const { registerDo, logOut, checkAuthStatus } = require("../controllers/sessionController");
+
+const { registerDo, logOut } = require("../controllers/sessionController");
+const csrf_options = {
+    secret: process.env.SESSION_SECRET,
+    protected_operations: ["PATCH", "POST", "PUT", "DELETE"],
+    development_mode: process.env.NODE_ENV !== "production",
+}
 
 router.route("/login").post((req, res, next) => {
     passport.authenticate("local", (error, user, info) => {
@@ -34,8 +41,28 @@ router.route("/login").post((req, res, next) => {
     })(req, res, next);
 });
 
-router.route("/register").post(registerDo);
+
+router.route("/register")
+    .get((req, res, next) => {
+
+        req.session.views = (req.session.views || 0) + 1;
+
+        req.session.save((err) => {
+            if (err) {
+                console.error("Error saving session in /register GET: ", err);
+                return next(err);
+            }
+
+            res.render("register", {
+                _csrf: req.csrfToken,
+                errors: req.body.errors || [],
+                info: req.info || [],
+                user: req.body.user || {}
+            });
+        });
+    })
+    .post(registerDo);
+
 router.route("/logout").post(logOut);
-router.route("/check-auth").get(checkAuthStatus);
 
 module.exports = router;

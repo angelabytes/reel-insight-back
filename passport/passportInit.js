@@ -33,7 +33,7 @@ const passportInit = () => {
 
     passport.deserializeUser(async function (id, done) {
         try {
-            const user = await User.findById(id);
+            const user = await User.findById(id).select('name userId');
             if (!user) {
                 return done(new Error("user not found"));
             }

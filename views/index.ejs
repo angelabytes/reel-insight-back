@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous" />
+    <title>Move Reviews</title>
+</head>
+
+<body>
+    <%- include("partials/head.ejs") %> <%- include("partials/header.ejs") %>
+            <span class="ms-2"></span>
+            <% if (user) { %> <a href="/secretWord" class="btn btn-primary">Secret Word</a>
+                <a href="/movies" class="btn btn-primary">Watchlist</a>
+                <% } else { %> <a href="/sessions/logon" class="btn btn-sm btn-secondary">Login</a> <a
+                        href="/sessions/register" class="btn btn-sm btn-secondary">Register</a>
+                    <% } %> <%- include("partials/footer.ejs") %>
+</body>
+
+</html>
