@@ -5,11 +5,13 @@ const MovieSchema = new mongoose.Schema({
     adult: { type: Boolean, default: false },
     backdrop_path: String,
     genre_ids: [Number],
+    genre_names: [String],
     tmdbId: { type: Number, required: true, unique: true },
     overview: String,
     popularity: Number,
     poster_path: String,
     release_date: Date,
+    run_time: Number,
     title: { type: String, required: true },
     video: { type: Boolean },
     watch_providers: [WatchProviderSchema],
@@ -25,6 +27,10 @@ const MovieSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    isFeatured: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 module.exports = mongoose.model("Movie", MovieSchema);

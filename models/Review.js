@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const ReviewSchema = new mongoose.Schema({
-    text: {
+    pov: {
         type: String,
         maxlength: 10000,
         required: [true, 'Please enter your review'],
@@ -11,10 +11,14 @@ const ReviewSchema = new mongoose.Schema({
         ref: "Movie",
         required: true,
     },
+    tmdbId: {
+        type: Number,
+        required: true
+    },
     rating: {
         type: Number,
         required: true,
-        min: 0,
+        min: 1,
         max: 5,
         validate: {
             validator: function (rating) {
